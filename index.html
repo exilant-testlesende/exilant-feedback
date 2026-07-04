@@ -1,0 +1,855 @@
+<!doctype html>
+<html lang="de" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Testlesenden Kapitelbewertung</title>
+  <meta name="description" content="Kapitelbewertung für Testlesende" />
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --panel-2: #eef2f8;
+      --text: #18202f;
+      --muted: #5f6c81;
+      --border: #d7dfeb;
+      --accent: #7c3aed;
+      --accent-2: #a855f7;
+      --danger: #dc2626;
+      --success: #16a34a;
+      --shadow: 0 18px 60px rgba(19, 27, 44, 0.12);
+      --radius: 22px;
+      --field: #ffffff;
+      --field-text: #18202f;
+      --focus: 0 0 0 4px rgba(124, 58, 237, 0.22);
+    }
+
+    html[data-theme="dark"] {
+      --bg: #0d1017;
+      --panel: #151a24;
+      --panel-2: #10141d;
+      --text: #f3f6fb;
+      --muted: #a6b0c2;
+      --border: #2a3140;
+      --accent: #a78bfa;
+      --accent-2: #c084fc;
+      --danger: #fb7185;
+      --success: #86efac;
+      --shadow: 0 22px 70px rgba(0, 0, 0, 0.38);
+      --field: #0f1420;
+      --field-text: #f3f6fb;
+      --focus: 0 0 0 4px rgba(167, 139, 250, 0.24);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(124, 58, 237, 0.22), transparent 34rem),
+        radial-gradient(circle at top right, rgba(192, 132, 252, 0.16), transparent 30rem),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a { color: var(--accent-2); }
+
+    .page {
+      width: min(980px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 58px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 18px;
+    }
+
+    .theme-toggle {
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: color-mix(in srgb, var(--panel) 88%, transparent);
+      border-radius: 999px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      background: linear-gradient(135deg, color-mix(in srgb, var(--panel) 92%, transparent), color-mix(in srgb, var(--panel-2) 92%, transparent));
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 8px);
+      padding: clamp(24px, 4vw, 44px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      right: -90px;
+      top: -100px;
+      border-radius: 999px;
+      background: rgba(167, 139, 250, 0.16);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      color: var(--accent-2);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-size: 0.82rem;
+    }
+
+    h1 {
+      margin: 10px 0 14px;
+      font-size: clamp(2rem, 6vw, 4.35rem);
+      line-height: 0.98;
+      letter-spacing: -0.05em;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: clamp(1.5rem, 3vw, 2.35rem);
+      line-height: 1.1;
+      letter-spacing: -0.04em;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .intro {
+      margin: 0;
+      max-width: 780px;
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.14rem);
+    }
+
+    .notice {
+      margin-top: 20px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--panel-2) 82%, transparent);
+      border-radius: 16px;
+      color: var(--muted);
+      max-width: 780px;
+    }
+
+    form {
+      margin-top: 26px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .card {
+      background: color-mix(in srgb, var(--panel) 96%, transparent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: clamp(18px, 3vw, 26px);
+      box-shadow: var(--shadow);
+    }
+
+    .toc-card { scroll-margin-top: 18px; }
+
+    .toc-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .toc-link {
+      text-decoration: none;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--field);
+      padding: 12px 14px;
+      font-weight: 800;
+      transition: transform 160ms ease, border-color 160ms ease;
+      display: grid;
+      gap: 2px;
+    }
+
+    .toc-link:hover {
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+    }
+
+    .toc-link small {
+      color: var(--muted);
+      font-weight: 650;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .question-list {
+      display: grid;
+      gap: 18px;
+    }
+
+    .question {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid color-mix(in srgb, var(--border) 88%, transparent);
+      background: color-mix(in srgb, var(--panel-2) 40%, transparent);
+    }
+
+    .section-card { scroll-margin-top: 18px; }
+
+    details.chapter-card {
+      background: color-mix(in srgb, var(--panel) 96%, transparent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      scroll-margin-top: 20px;
+    }
+
+    details.chapter-card[open] {
+      border-color: color-mix(in srgb, var(--accent) 48%, var(--border));
+    }
+
+    details.chapter-card > summary {
+      list-style: none;
+      cursor: pointer;
+      padding: clamp(18px, 3vw, 26px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    details.chapter-card > summary::-webkit-details-marker { display: none; }
+
+    .summary-title {
+      display: grid;
+      gap: 2px;
+    }
+
+    .summary-title strong {
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .summary-title span {
+      color: var(--muted);
+      font-weight: 650;
+    }
+
+    .summary-chip {
+      flex: 0 0 auto;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: var(--field);
+      border-radius: 999px;
+      padding: 8px 11px;
+      font-weight: 800;
+      font-size: 0.84rem;
+    }
+
+    .chapter-body {
+      border-top: 1px solid var(--border);
+      padding: clamp(18px, 3vw, 26px);
+      display: grid;
+      gap: 18px;
+    }
+
+    label, legend {
+      display: block;
+      font-weight: 780;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    fieldset {
+      border: 0;
+      margin: 0;
+      padding: 0;
+    }
+
+    input[type="text"], input[type="email"], input[type="number"], textarea, select {
+      width: 100%;
+      color: var(--field-text);
+      background: var(--field);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 13px;
+      font: inherit;
+      outline: none;
+      transition: border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    input[type="number"] { max-width: 180px; }
+
+    textarea {
+      resize: vertical;
+      min-height: 98px;
+    }
+
+    select.scale-select {
+      max-width: 220px;
+      font-weight: 760;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: var(--focus);
+    }
+
+    .field-hint {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .actions {
+      position: sticky;
+      bottom: 16px;
+      z-index: 20;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    button, .button-link {
+      appearance: none;
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font: inherit;
+      font-weight: 820;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 160ms ease, opacity 160ms ease;
+    }
+
+    button:hover, .button-link:hover { transform: translateY(-1px); }
+
+    .primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+    }
+
+    .secondary {
+      background: var(--field);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .danger {
+      background: color-mix(in srgb, var(--danger) 16%, var(--field));
+      color: var(--danger);
+      border: 1px solid color-mix(in srgb, var(--danger) 34%, var(--border));
+    }
+
+    .status {
+      color: var(--success);
+      font-weight: 780;
+      min-height: 1.5em;
+      flex: 1 1 240px;
+    }
+
+    .side-dock {
+      position: fixed;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 50;
+      width: min(250px, calc(100vw - 36px));
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      padding: 12px;
+    }
+
+    .side-dock.collapsed {
+      width: auto;
+      padding: 10px;
+    }
+
+    .dock-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-weight: 900;
+    }
+
+    .dock-toggle {
+      border-radius: 999px;
+      padding: 7px 9px;
+      font-size: 0.78rem;
+      background: var(--field);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .dock-links { display: grid; gap: 8px; }
+
+    .dock-link {
+      display: block;
+      text-decoration: none;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--field);
+      padding: 10px 11px;
+      font-weight: 820;
+    }
+
+    .dock-link small {
+      display: block;
+      color: var(--muted);
+      font-weight: 650;
+      margin-top: 2px;
+    }
+
+    .side-dock.collapsed .dock-links,
+    .side-dock.collapsed .dock-heading { display: none; }
+
+    .side-dock.collapsed .dock-title { margin-bottom: 0; }
+
+    .mini-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .chapter-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .footer-note {
+      color: var(--muted);
+      text-align: center;
+      margin-top: 26px;
+    }
+
+    @media (max-width: 1180px) {
+      .side-dock {
+        top: auto;
+        right: 12px;
+        bottom: 84px;
+        transform: none;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page { width: min(100% - 22px, 980px); padding-top: 18px; }
+      .grid-2, .toc-grid { grid-template-columns: 1fr; }
+      .actions { position: static; }
+      .side-dock {
+        position: static;
+        transform: none;
+        width: auto;
+        margin: 14px auto 0;
+      }
+      details.chapter-card > summary { align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <aside class="side-dock" id="sideDock" aria-label="Schnellzugriffe">
+    <div class="dock-title">
+      <span class="dock-heading">Schnellzugriff</span>
+      <button class="dock-toggle" type="button" id="dockToggle" aria-expanded="true">Links einklappen</button>
+    </div>
+    <div class="dock-links">
+      <a class="dock-link" href="https://docs.google.com/document/d/1baPm4DijgFu9L_EEZQ7VqKnegwVh__ShJQclXvAHO-4/edit?tab=t.0" target="_blank" rel="noopener">Alpha-Manuskript <small>zum Nachschlagen</small></a>
+      <a class="dock-link" href="https://www.youtube.com/watch?v=ob-mA_KelhQ&list=PL9-f2d5gbuNCxBQFJpf-3Jx2s24_xJNhV&index=2&t=7s" target="_blank" rel="noopener">Hörbuch <small>YouTube-Playlist</small></a>
+      <a class="dock-link" href="https://exilant-testlesende.github.io/exilant-tester-profile-1/" target="_blank" rel="noopener">Testlesenden-Fragebogen <small>Profilfragen</small></a>
+      <a class="dock-link" href="#toc">Kapitelübersicht <small>direkt springen</small></a>
+    </div>
+  </aside>
+
+  <main class="page">
+    <div class="topbar">
+      <button class="theme-toggle" type="button" id="themeToggle">🌙 Dark Mode</button>
+    </div>
+
+    <section class="hero">
+      <span class="eyebrow">Exilant · Testlesenden Feedback</span>
+      <h1>Kapitelbewertung</h1>
+      <p class="intro">Bewerte nur die Kapitel, die du gelesen oder gehört hast. Du musst nicht alles ausfüllen. Leere Kapitel werden beim Kopieren und beim Mailtext automatisch ausgelassen.</p>
+      <div class="notice">
+        <strong>Zum Nachschlagen:</strong> Rechts findest du dauerhaft die Buttons zum Alpha-Manuskript, zum Hörbuch und zu den Profilfragen. In der Kapitelübersicht stehen zusätzlich die Seitenzahlen aus dem Manuskript.
+      </div>
+      <div class="mini-tools">
+        <a class="button-link primary" href="https://docs.google.com/document/d/1baPm4DijgFu9L_EEZQ7VqKnegwVh__ShJQclXvAHO-4/edit?tab=t.0" target="_blank" rel="noopener">Alpha-Manuskript öffnen</a>
+        <a class="button-link secondary" href="https://www.youtube.com/watch?v=ob-mA_KelhQ&list=PL9-f2d5gbuNCxBQFJpf-3Jx2s24_xJNhV&index=2&t=7s" target="_blank" rel="noopener">Hörbuch öffnen</a>
+        <a class="button-link secondary" href="https://exilant-testlesende.github.io/exilant-tester-profile-1/" target="_blank" rel="noopener">Profilfragen öffnen</a>
+      </div>
+    </section>
+
+    <form id="chapterForm">
+      <section class="card" data-section="Allgemeine Angaben">
+        <h2>Allgemeine Angaben</h2>
+        <div class="grid-2">
+          <div class="question">
+            <label for="readerName">Dein Name</label>
+            <input id="readerName" name="readerName" type="text" autocomplete="name" placeholder="Name eintragen" data-label="Name" />
+          </div>
+          <div class="question">
+            <label for="readerContact">Kontakt / E-Mail / WhatsApp optional</label>
+            <input id="readerContact" name="readerContact" type="text" autocomplete="email" placeholder="freiwillig" data-label="Kontakt" />
+          </div>
+        </div>
+      </section>
+
+      <section class="card toc-card" id="toc">
+        <h2>Inhaltsverzeichnis</h2>
+        <p class="intro">Gehe hier direkt zum Kapitel. Die Seitenzahl hilft dir beim Nachschlagen im Alpha-Manuskript.</p>
+        <div class="mini-tools">
+          <button class="secondary" type="button" id="openAllButton">Alle Kapitel öffnen</button>
+          <button class="secondary" type="button" id="closeAllButton">Alle Kapitel einklappen</button>
+        </div>
+        <div class="toc-grid" id="chapterToc"></div>
+      </section>
+
+      <div id="chapterContainer" class="question-list"></div>
+
+      <section class="card">
+        <h2>Absenden</h2>
+        <p class="intro">Der Mail-Button öffnet einen vorbereiteten Mailentwurf an Dario. Bei sehr vielen Antworten wird der vollständige Text zusätzlich automatisch in die Zwischenablage kopiert, damit nichts verloren geht.</p>
+        <div class="actions">
+          <button class="primary" type="button" id="sendMailButton">Per Mail senden</button>
+          <button class="secondary" type="button" id="copyButton">In Zwischenablage kopieren</button>
+          <button class="danger" type="reset">Formular zurücksetzen</button>
+          <span class="status" id="status" aria-live="polite"></span>
+        </div>
+      </section>
+    </form>
+
+    <p class="footer-note">Danke, dass du dir die Zeit für ehrliches Kapitel-Feedback nimmst.</p>
+  </main>
+
+  <script>
+    (function () {
+      const FORM_STORAGE_KEY = "testlesenden-kapitelbewertung-v1";
+      const THEME_STORAGE_KEY = "testlesenden-kapitel-theme";
+      const DOCK_STORAGE_KEY = "testlesenden-kapitel-dock";
+      const recipient = "dario.exilant@gmail.com";
+      const mailSubject = "Testlesenden Kapitelbewertung";
+      const manuscriptUrl = "https://docs.google.com/document/d/1baPm4DijgFu9L_EEZQ7VqKnegwVh__ShJQclXvAHO-4/edit?tab=t.0";
+      const chapters = [{"id": "prolog", "label": "Prolog", "title": "Nourielle", "page": 3}, {"id": "kapitel-1", "label": "Kapitel 1", "title": "Die Woche der Saat", "page": 17}, {"id": "kapitel-2", "label": "Kapitel 2", "title": "Maschinen, Götter und Träume", "page": 28}, {"id": "kapitel-3", "label": "Kapitel 3", "title": "Arythmia", "page": 37}, {"id": "kapitel-4", "label": "Kapitel 4", "title": "Nour", "page": 48}, {"id": "kapitel-5", "label": "Kapitel 5", "title": "Glaciascai", "page": 58}, {"id": "kapitel-6", "label": "Kapitel 6", "title": "Kein Brief in diesem Haus", "page": 68}, {"id": "kapitel-7", "label": "Kapitel 7", "title": "Fuchs und Waschbär", "page": 80}, {"id": "kapitel-8", "label": "Kapitel 8", "title": "Contubernium sieben", "page": 90}, {"id": "kapitel-9", "label": "Kapitel 9", "title": "Stoppeln auf der Nordseite", "page": 101}, {"id": "kapitel-10", "label": "Kapitel 10", "title": "Kartenspiel", "page": 110}, {"id": "kapitel-11", "label": "Kapitel 11", "title": "Was tun sie Kindern an ...", "page": 120}, {"id": "kapitel-12", "label": "Kapitel 12", "title": "Renaissance im Vakuum", "page": 130}, {"id": "kapitel-13", "label": "Kapitel 13", "title": "Abschied einer Ära", "page": 141}, {"id": "kapitel-14", "label": "Kapitel 14", "title": "Ein Stein und das Weltall", "page": 153}, {"id": "kapitel-15", "label": "Kapitel 15", "title": "Der Fall", "page": 161}, {"id": "kapitel-16", "label": "Kapitel 16", "title": "Zwischen Schmerz und endloser Energie", "page": 172}, {"id": "kapitel-17", "label": "Kapitel 17", "title": "Was blieb, war ihr Geruch", "page": 184}, {"id": "kapitel-18", "label": "Kapitel 18", "title": "Beißen und Bluten", "page": 195}, {"id": "kapitel-19", "label": "Kapitel 19", "title": "Nova Speas", "page": 203}, {"id": "kapitel-20", "label": "Kapitel 20", "title": "Brachiad Astra", "page": 212}, {"id": "kapitel-21", "label": "Kapitel 21", "title": "Veteranen", "page": 223}, {"id": "kapitel-22", "label": "Kapitel 22", "title": "Dies Colores", "page": 232}, {"id": "kapitel-23", "label": "Kapitel 23", "title": "Die andere Seite", "page": 243}, {"id": "kapitel-24", "label": "Kapitel 24", "title": "Rattenplage", "page": 251}, {"id": "kapitel-25", "label": "Kapitel 25", "title": "Geister der Tundra", "page": 261}, {"id": "kapitel-26", "label": "Kapitel 26", "title": "Schatten der Macht", "page": 274}, {"id": "kapitel-27", "label": "Kapitel 27", "title": "Florie", "page": 286}, {"id": "kapitel-28", "label": "Kapitel 28", "title": "Lichtgesang", "page": 296}, {"id": "kapitel-29", "label": "Kapitel 29", "title": "Der Baum auf dem Feld", "page": 306}, {"id": "kapitel-30", "label": "Kapitel 30", "title": "Mütter", "page": 316}, {"id": "kapitel-31", "label": "Kapitel 31", "title": "Der Tank", "page": 324}, {"id": "kapitel-32", "label": "Kapitel 32", "title": "Felicie", "page": 336}, {"id": "kapitel-33", "label": "Kapitel 33", "title": "Todesfalle", "page": 346}, {"id": "kapitel-34", "label": "Kapitel 34", "title": "Flintenfinte", "page": 357}, {"id": "kapitel-35", "label": "Kapitel 35", "title": "Der Prozess", "page": 373}, {"id": "kapitel-36", "label": "Kapitel 36", "title": "Der Exilant", "page": 387}];
+
+      const scaleQuestions = [
+        ["readEnjoyment", "Wie gern hast du dieses Kapitel gelesen?", "0–10 | 10 = sehr"],
+        ["continueReading", "Wie sehr wolltest du danach weiterlesen?", "0–10 | 10 = sehr"],
+        ["clarity", "Wie verständlich war das Kapitel?", "0–10 | 10 = sehr"],
+        ["tension", "Wie spannend oder fesselnd fandest du dieses Kapitel?", "0–10 | 10 = sehr"],
+        ["emotion", "Wie stark hat dich das Kapitel emotional berührt?", "0–10 | 10 = sehr"],
+        ["atmosphere", "Bildhaftigkeit / Atmosphäre: Wie gut konntest du dir das Geschehen vorstellen?", "0–10 | 10 = sehr"],
+        ["dragged", "Gab es Stellen, die sich gezogen haben?", "0 = gar nicht / 10 = sehr stark"],
+        ["human", "Wie natürlich oder menschlich geschrieben wirkte das Kapitel auf dich?", "0–10 | 10 = sehr"]
+      ];
+
+      const textQuestions = [
+        ["interestingFigure", "Welche Figur war in diesem Kapitel am interessantesten?", "Ein Name reicht.", "input"],
+        ["disturbed", "(Extra) Gab es etwas, das dich gestört oder rausgerissen hat?", "Text", "textarea"],
+        ["feeling", "(Extra) Dein spontanes Gesamtgefühl in einem Satz:", "Text", "textarea"],
+        ["thoughts", "(Extra) Gab es Fragen oder weitere Gedanken zu diesem Kapitel?", "Text", "textarea"]
+      ];
+
+      const form = document.getElementById("chapterForm");
+      const statusEl = document.getElementById("status");
+      const themeToggle = document.getElementById("themeToggle");
+      const sendMailButton = document.getElementById("sendMailButton");
+      const copyButton = document.getElementById("copyButton");
+      const sideDock = document.getElementById("sideDock");
+      const dockToggle = document.getElementById("dockToggle");
+      const chapterToc = document.getElementById("chapterToc");
+      const chapterContainer = document.getElementById("chapterContainer");
+      const openAllButton = document.getElementById("openAllButton");
+      const closeAllButton = document.getElementById("closeAllButton");
+
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>'"]/g, function (char) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[char];
+        });
+      }
+
+      function scaleSelect(name, label, hint, chapterId) {
+        const id = chapterId + "-" + name;
+        const options = ['<option value="">Keine Angabe</option>'];
+        for (let i = 0; i <= 10; i += 1) options.push('<option value="' + i + '">' + i + '</option>');
+        return `
+          <div class="question">
+            <label for="${id}">${escapeHtml(label)}</label>
+            <select class="scale-select" id="${id}" name="${chapterId}.${name}" data-label="${escapeHtml(label)}">
+              ${options.join("")}
+            </select>
+            <p class="field-hint">${escapeHtml(hint)}</p>
+          </div>
+        `;
+      }
+
+      function textField(name, label, hint, type, chapterId) {
+        const id = chapterId + "-" + name;
+        if (type === "textarea") {
+          return `
+            <div class="question">
+              <label for="${id}">${escapeHtml(label)}</label>
+              <textarea id="${id}" name="${chapterId}.${name}" placeholder="${escapeHtml(hint)}" data-label="${escapeHtml(label)}"></textarea>
+            </div>
+          `;
+        }
+        return `
+          <div class="question">
+            <label for="${id}">${escapeHtml(label)}</label>
+            <input id="${id}" name="${chapterId}.${name}" type="text" placeholder="${escapeHtml(hint)}" data-label="${escapeHtml(label)}" />
+          </div>
+        `;
+      }
+
+      function buildChapters() {
+        chapterToc.innerHTML = chapters.map(function (chapter) {
+          return `<a class="toc-link" href="#${chapter.id}"><span>${escapeHtml(chapter.label)} · ${escapeHtml(chapter.title)}</span><small>Seite ${chapter.page}</small></a>`;
+        }).join("");
+
+        chapterContainer.innerHTML = chapters.map(function (chapter) {
+          const scaleHtml = scaleQuestions.map(function (q) { return scaleSelect(q[0], q[1], q[2], chapter.id); }).join("");
+          const textHtml = textQuestions.map(function (q) { return textField(q[0], q[1], q[2], q[3], chapter.id); }).join("");
+          return `
+            <details class="chapter-card" id="${chapter.id}" data-chapter-id="${chapter.id}" data-chapter-title="${escapeHtml(chapter.label + ' – ' + chapter.title)}" data-chapter-page="${chapter.page}">
+              <summary>
+                <span class="summary-title">
+                  <strong>${escapeHtml(chapter.label)} · ${escapeHtml(chapter.title)}</strong>
+                  <span>Seite ${chapter.page}</span>
+                </span>
+                <span class="summary-chip">Bewerten</span>
+              </summary>
+              <div class="chapter-body" data-section="${escapeHtml(chapter.label + ' – ' + chapter.title)}">
+                <div class="chapter-tools">
+                  <a class="button-link secondary" href="${manuscriptUrl}" target="_blank" rel="noopener">Im Manuskript nachschlagen</a>
+                  <a class="button-link secondary" href="#toc">Zurück zum Inhaltsverzeichnis</a>
+                </div>
+                <div class="grid-2">
+                  ${scaleHtml}
+                </div>
+                <div class="question-list">
+                  ${textHtml}
+                </div>
+                <div class="chapter-tools">
+                  <a class="button-link secondary" href="#toc">Zurück zum Inhaltsverzeichnis</a>
+                </div>
+              </div>
+            </details>
+          `;
+        }).join("");
+      }
+
+      function setStatus(message) {
+        statusEl.textContent = message;
+        if (message) {
+          window.setTimeout(function () {
+            if (statusEl.textContent === message) statusEl.textContent = "";
+          }, 5600);
+        }
+      }
+
+      function setTheme(theme) {
+        document.documentElement.dataset.theme = theme;
+        themeToggle.textContent = theme === "dark" ? "🌙 Dark Mode" : "☀️ Light Mode";
+        localStorage.setItem(THEME_STORAGE_KEY, theme);
+      }
+
+      function setDock(collapsed) {
+        sideDock.classList.toggle("collapsed", collapsed);
+        dockToggle.textContent = collapsed ? "Links ausklappen" : "Links einklappen";
+        dockToggle.setAttribute("aria-expanded", String(!collapsed));
+        localStorage.setItem(DOCK_STORAGE_KEY, collapsed ? "collapsed" : "open");
+      }
+
+      function saveForm() {
+        const data = {};
+        Array.from(form.elements).forEach(function (el) {
+          if (!el.name) return;
+          if (el.type !== "button" && el.type !== "reset" && el.type !== "submit") data[el.name] = el.value;
+        });
+        localStorage.setItem(FORM_STORAGE_KEY, JSON.stringify(data));
+      }
+
+      function restoreForm() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(FORM_STORAGE_KEY) || "{}");
+          Object.entries(saved).forEach(function ([name, value]) {
+            const el = form.querySelector('[name="' + CSS.escape(name) + '"]');
+            if (el) el.value = value;
+          });
+        } catch (error) {
+          console.warn("Formulardaten konnten nicht wiederhergestellt werden.", error);
+        }
+      }
+
+      function hasChapterAnswers(details) {
+        const fields = Array.from(details.querySelectorAll("input, textarea, select"));
+        return fields.some(function (el) { return String(el.value || "").trim() !== ""; });
+      }
+
+      function getFieldLabel(el) {
+        if (el.dataset.label) return el.dataset.label;
+        const label = el.id ? form.querySelector('label[for="' + CSS.escape(el.id) + '"]') : null;
+        return label ? label.textContent.replace(/\s+/g, " ").trim() : el.name;
+      }
+
+      function serializeForm() {
+        const lines = [
+          "Testlesenden Kapitelbewertung",
+          "=============================",
+          ""
+        ];
+
+        const name = String(form.readerName.value || "").trim();
+        const contact = String(form.readerContact.value || "").trim();
+        lines.push("--- Allgemeine Angaben ---", "");
+        lines.push("Name: " + (name || "Keine Angabe"));
+        lines.push("Kontakt: " + (contact || "Keine Angabe"));
+        lines.push("");
+
+        let chapterCount = 0;
+        chapters.forEach(function (chapter) {
+          const details = document.getElementById(chapter.id);
+          if (!details || !hasChapterAnswers(details)) return;
+          chapterCount += 1;
+          lines.push("--- " + chapter.label + " – " + chapter.title + " | Seite " + chapter.page + " ---", "");
+          Array.from(details.querySelectorAll("select, input, textarea")).forEach(function (el) {
+            const value = String(el.value || "").trim();
+            if (!value) return;
+            lines.push(getFieldLabel(el) + ":");
+            lines.push(value);
+            lines.push("");
+          });
+        });
+
+        if (chapterCount === 0) {
+          lines.push("Keine Kapitelbewertung ausgefüllt.", "");
+        }
+
+        return lines.join("\n");
+      }
+
+      async function copyText(text) {
+        try {
+          await navigator.clipboard.writeText(text);
+          return true;
+        } catch (error) {
+          const temp = document.createElement("textarea");
+          temp.value = text;
+          document.body.appendChild(temp);
+          temp.select();
+          document.execCommand("copy");
+          temp.remove();
+          return true;
+        }
+      }
+
+      function openChapterFromHash() {
+        const id = decodeURIComponent(window.location.hash || "").replace("#", "");
+        if (!id) return;
+        const target = document.getElementById(id);
+        if (target && target.matches("details.chapter-card")) {
+          target.open = true;
+          window.setTimeout(function () { target.scrollIntoView({ behavior: "smooth", block: "start" }); }, 50);
+        }
+      }
+
+      buildChapters();
+      setTheme(localStorage.getItem(THEME_STORAGE_KEY) || "dark");
+      setDock(localStorage.getItem(DOCK_STORAGE_KEY) === "collapsed");
+      restoreForm();
+      openChapterFromHash();
+
+      themeToggle.addEventListener("click", function () {
+        const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+        setTheme(nextTheme);
+      });
+
+      dockToggle.addEventListener("click", function () {
+        setDock(!sideDock.classList.contains("collapsed"));
+      });
+
+      openAllButton.addEventListener("click", function () {
+        document.querySelectorAll("details.chapter-card").forEach(function (details) { details.open = true; });
+      });
+
+      closeAllButton.addEventListener("click", function () {
+        document.querySelectorAll("details.chapter-card").forEach(function (details) { details.open = false; });
+      });
+
+      window.addEventListener("hashchange", openChapterFromHash);
+      form.addEventListener("input", saveForm);
+      form.addEventListener("change", saveForm);
+
+      copyButton.addEventListener("click", async function () {
+        await copyText(serializeForm());
+        setStatus("Antworten wurden in die Zwischenablage kopiert.");
+      });
+
+      sendMailButton.addEventListener("click", async function () {
+        const body = serializeForm();
+        let mailBody = body;
+        if (body.length > 14000) {
+          await copyText(body);
+          mailBody = "Hallo Dario,\n\nich habe die Kapitelbewertung ausgefüllt. Der vollständige Text wurde automatisch in meine Zwischenablage kopiert und kann hier eingefügt werden.\n\nName: " + (form.readerName.value || "") + "\n";
+          setStatus("Der vollständige Text ist sehr lang und wurde kopiert. Bitte im Mailentwurf einfügen, falls er nicht vollständig erscheint.");
+        } else {
+          setStatus("Mail-Entwurf wurde geöffnet. Falls nichts passiert, nutze bitte zusätzlich ›In Zwischenablage kopieren‹.");
+        }
+        const mailtoUrl = "mailto:" + encodeURIComponent(recipient) +
+          "?subject=" + encodeURIComponent(mailSubject) +
+          "&body=" + encodeURIComponent(mailBody);
+        window.location.href = mailtoUrl;
+      });
+
+      form.addEventListener("reset", function () {
+        window.setTimeout(function () {
+          localStorage.removeItem(FORM_STORAGE_KEY);
+          setStatus("Formular wurde zurückgesetzt.");
+        }, 0);
+      });
+    })();
+  </script>
+</body>
+</html>
